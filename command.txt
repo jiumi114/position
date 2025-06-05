@@ -1,0 +1,61 @@
+cd ~
+mkdir -p position/src
+cd position
+catkin_make
+cd src
+catkin_create_pkg position roscpp rospy std_msgs geometry_msgs message_generation message_runtime
+复制文件
+修改CMakeLists.txt 和 package.xml
+cd ~/position
+catkin_make
+rosmsg show Detections
+
+roscore
+rosrun  position rknnlite_test1.py
+
+基本配置信息：
+0.1、连接嘉陵江实验室WiFi
+名称：嘉陵江实验室
+密码：jlj250409 （嘉陵江首字母）
+
+0.2、配置RK3588板卡的网络
+sudo nmtui
+选择上述“嘉陵江实验室”wifi进行连接
+
+正式调试信息：
+1、连接车的wifi，或者使用网线连接板卡
+WiFi名称：举例如：sct3_wifi_1_205，其中，sct3为车上贴的标签，即车的编号
+密码：www.usr.cn
+
+2、ssh连接车辆
+连接ip192.168.x.xxx，IP后两位，对应WiFi上的数字，例如上述WiFi为sct3_wifi_1_205，那么ip为192.168.1.205
+（注：如果是网线连接，访问的ip也是192.168.1.205）
+ssh连接
+账号：orangepi
+密码：orangepi
+
+3、启动相机
+cd ~
+cd hik_camera
+source install/setup.bash
+roslaunch hik_camera_driver camera.launch
+然后需要再开一个终端
+
+4、启动雷达和定位
+cd ~
+cd sct_ws/
+source devel/setup.bash
+roslaunch sct_config target_detection.launch
+然后需要再开一个终端
+
+5、查看topic状态
+rostopic list
+检查相机、雷达、定位对应的topic已经出现，即看下面需要记录的topic是否有了
+
+6、记录数据
+记录相机、雷达、定位的所有数据
+rosbag record -o ~/rosbag2/data.bag /camera/camera_info /camera/image/compressed /ouster/points /tf /tf_static /odom --split --size=1024 --min-space=8192
+然后需要再开一个终端
+
+7、查看数据信息
+rosbag info xx.bag
