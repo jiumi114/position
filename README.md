@@ -36,9 +36,9 @@ transform = self.tf_buffer.lookup_transform(GLOBAL_MAP, CAR_MAP, pc_msg.header.s
 
 base env:
 
-pip install opencv-python==4.11.0.86 fast-histogram==0.13 numpy==1.24.4 onnx==1.17.0 onnxruntime==1.16.3 protobuf==4.25.4 ruamel.yaml==0.18.10 psutil==7.0.0 scipy==1.10.1 tqdm==4.67.1 scikit-learn==1.3.0 pyyaml==5.3.1
+pip install opencv-python==4.11.0.86 fast-histogram==0.13 numpy==1.24.4 onnx==1.17.0 onnxruntime==1.16.3 protobuf==4.25.4 ruamel.yaml==0.18.10 psutil==7.0.0 scipy==1.10.1 tqdm==4.67.1 scikit-learn==1.3.0 pyyaml==5.3.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-pip install torch==1.10.1
+pip install torch==1.10.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 安装src下的rknn_toolkit_lite2-2.3.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64
 
