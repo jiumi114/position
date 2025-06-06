@@ -577,6 +577,7 @@ def main():
         print("Initializing program...")
         collector = DataCollector()
         processor = FusionProcessor()
+        print("Waiting for sensor data...")
         
         while not rospy.is_shutdown():
             # print("\n" + "="*50)

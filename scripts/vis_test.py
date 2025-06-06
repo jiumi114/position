@@ -22,10 +22,7 @@ from scipy.spatial.transform import Rotation
 import sys
 
 # config
-ONNX_MODEL = '/home/orangepi/demo2/src/demoros2/src/models/yolov8n.onnx'
 RKNN_MODEL = '/home/orangepi/demo2/src/demoros2/src/models/yolov8n.rknn'
-QUANTIZE_ON = False
-DATASET = '/home/orangepi/demo2/src/demoros2/src/models/dataset.txt'
 CLASSES_PATH = "/home/orangepi/demo2/src/demoros2/src/models/coco.yaml"
 VISIMG_SAVE_DIR = "/home/orangepi/demo2/src/demoros2/vis-test1"
 

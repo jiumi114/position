@@ -1,9 +1,13 @@
 零、环境准备：
 将position-master文件夹放到 ~ 下
+远程调试情况下：rsync -r position-master orangepi@192.168.8.83:/home/orangepi/
+
 cd ~/position-master/src
 pip install opencv-python==4.11.0.86 fast-histogram==0.13 numpy==1.24.4 onnx==1.17.0 onnxruntime==1.16.3 protobuf==4.25.4 ruamel.yaml==0.18.10 psutil==7.0.0 scipy==1.10.1 tqdm==4.67.1 scikit-learn==1.3.0 pyyaml==5.3.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install torch==1.10.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install rknn_toolkit_lite2-2.3.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64
+pip install rknn_toolkit_lite2-1.6.0-cp38-cp38-linux_aarch64.whl
+sudo mv /usr/lib/librknnrt.so /usr/lib/librknnrt.so.bak
+sudo cp librknnrt.so-1.6.0 /usr/lib/librknnrt.so
 
 一、新建项目文件夹，创建ros包：
 cd ~
@@ -13,31 +17,30 @@ catkin_make
 cd src
 catkin_create_pkg position roscpp rospy std_msgs geometry_msgs message_generation message_runtime
 
-二、复制代码文件 msg/  scripts/ src/：
+二、复制代码文件,修改 CMakeLists.txt 和 package.xml 依赖:
 cp -r ~/position-master/msg ~/position/src/position/msg
 cp -r ~/position-master/scripts ~/position/src/position/scripts
 rm -r ~/position/src/position/src
 cp -r ~/position-master/src ~/position/src/position/src
-
-三、修改 CMakeLists.txt 和 package.xml 依赖:
 mv ~/position/src/position/CMakeLists.txt ~/position/src/position/CMakeLists.txt.bak
 mv ~/position/src/position/package.xml ~/position/src/position/package.xml.bak
 cp ~/position-master/CMakeLists.txt ~/position/src/position/CMakeLists.txt
 cp ~/position-master/package.xml ~/position/src/position/package.xml
 
-四、编译：
+三、编译：
 cd ~/position
 catkin_make
 source ./devel/setup.bash
 rosmsg show Detections
 
-五、启动：
+四、启动：
 终端1：
 roscore
 
 终端2：
 cd ~/position
 source ./devel/setup.bash
+修改一下 src/position/scripts 里面的程序
 rosrun position rknnlite_test1.py
 可自行写.launch启动脚本
 
