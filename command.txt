@@ -16,7 +16,7 @@ catkin_create_pkg position roscpp rospy std_msgs geometry_msgs message_generatio
 二、复制代码文件 msg/  scripts/ src/：
 cp -r ~/position-master/msg ~/position/src/position/msg
 cp -r ~/position-master/scripts ~/position/src/position/scripts
-rm ~/position/src/position/src
+rm -r ~/position/src/position/src
 cp -r ~/position-master/src ~/position/src/position/src
 
 三、修改 CMakeLists.txt 和 package.xml 依赖:
