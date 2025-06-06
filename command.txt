@@ -4,14 +4,17 @@ cd position
 catkin_make
 cd src
 catkin_create_pkg position roscpp rospy std_msgs geometry_msgs message_generation message_runtime
-复制文件
-修改CMakeLists.txt 和 package.xml
+复制文件：msg/  scripts/ src/
+修改CMakeLists.txt 和 package.xml 的依赖
 cd ~/position
 catkin_make
 rosmsg show Detections
 
 roscore
+
+source ./devel/setup.bash
 rosrun  position rknnlite_test1.py
+可自行写.launch启动脚本
 
 基本配置信息：
 0.1、连接嘉陵江实验室WiFi
