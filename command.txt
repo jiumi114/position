@@ -28,6 +28,7 @@ cp ~/position-master/package.xml ~/position/src/position/package.xml
 四、编译：
 cd ~/position
 catkin_make
+source ./devel/setup.bash
 rosmsg show Detections
 
 五、启动：
