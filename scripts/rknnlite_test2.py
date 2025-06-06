@@ -23,8 +23,8 @@ from tf2_msgs.msg import TFMessage
 from tf.transformations import quaternion_matrix, translation_matrix
 
 # 配置参数
-RKNN_MODEL = "/home/orangepi/demo2/src/demoros2/src/models/yolov8n.rknn"
-CLASSES_PATH = "/home/orangepi/demo2/src/demoros2/src/models/coco.yaml"
+RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n.rknn"
+CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
 
 # topic
 PC_TOPIC = "/ouster/points"
