@@ -30,9 +30,9 @@ CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
 PC_TOPIC = "/sctX/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
 PUB_TOPIC = "other_vehicle_detections"
-GLOBAL_MAP = 'odom'
-CAR_MAP = 'sctX/ouster_sensor_link'
-CAR_ID = "car-001"
+GLOBAL_MAP = 'world'
+CAR_MAP = 'sctX/ouster_lidar_link'
+CAR_ID = "car-00X"
 
 MAX_X = 100
 MAX_Y = 25.0

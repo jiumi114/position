@@ -32,7 +32,7 @@ IMG_TOPIC = "/camera/image/compressed"
 PUB_TOPIC = "own_sensor_detections"
 GLOBAL_MAP = 'world'
 CAR_MAP = 'sctX/ouster_lidar_link'
-CAR_ID = "car-001"
+CAR_ID = "car-00X"
 
 MAX_X = 100
 MAX_Y = 25.0
