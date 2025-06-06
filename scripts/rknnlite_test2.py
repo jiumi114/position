@@ -23,13 +23,13 @@ from tf2_msgs.msg import TFMessage
 from tf.transformations import quaternion_matrix, translation_matrix
 
 # 配置参数
-RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n.rknn"
+RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn"
 CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
 
 # topic
 PC_TOPIC = "/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
-PUB_TOPIC = "detection"
+PUB_TOPIC = "other_vehicle_detections"
 GLOBAL_MAP = 'odom'
 CAR_MAP = 'ouster_sensor_link'
 CAR_ID = "car-001"
