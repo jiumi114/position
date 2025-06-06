@@ -45,3 +45,5 @@ pip install torch==1.10.1
 src下的librknnrt.so rknn_server放到/usr/lib/
 
 chmod +x /usr/bin/rknn_server
+
+不带后缀的是2.3.2版本的，带后缀的是1.6.0版本
