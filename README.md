@@ -42,8 +42,14 @@ pip install torch==1.10.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 安装src下的rknn_toolkit_lite2-2.3.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64
 
+pip install rknn_toolkit_lite2-2.3.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64
+
 src下的librknnrt.so rknn_server放到/usr/lib/
 
-chmod +x /usr/bin/rknn_server
-
 不带后缀的是2.3.2版本的，带后缀的是1.6.0版本
+
+sudo cp ./src/librknnrt.so /usr/lib/librknnrt.so
+
+sudo cp ./src/rknn_server /usr/lib/rknn_server
+
+chmod +x /usr/bin/rknn_server
