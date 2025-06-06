@@ -1,3 +1,5 @@
+命令见command.txt
+
 请自行创建目录和名为position的ros包，之后可以将msg、scripts、src转移到ros包内
 
 修改CMakeList.txt和package.xml后编译
