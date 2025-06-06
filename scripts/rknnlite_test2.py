@@ -27,11 +27,11 @@ RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn"
 CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
 
 # topic
-PC_TOPIC = "/ouster/points"
+PC_TOPIC = "/sctX/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
 PUB_TOPIC = "other_vehicle_detections"
 GLOBAL_MAP = 'odom'
-CAR_MAP = 'ouster_sensor_link'
+CAR_MAP = 'sctX/ouster_sensor_link'
 CAR_ID = "car-001"
 
 MAX_X = 100
