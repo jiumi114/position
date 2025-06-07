@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   nav_msgs
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -56,6 +57,7 @@ add_message_files(
   Detection.msg
   Detections.msg
   DetectionsWithOdom.msg
+  DetectionsWithImg.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -78,6 +80,7 @@ generate_messages(
   geometry_msgs
   std_msgs
   nav_msgs
+  sensor_msgs
 )
 
 ################################################

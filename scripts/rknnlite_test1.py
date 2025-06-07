@@ -14,9 +14,8 @@ from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
 import sensor_msgs.point_cloud2 as pc2
-from position.msg import Detection, Detections
+from position.msg import Detection, DetectionsWithImg
 from geometry_msgs.msg import Point
-import geometry_msgs.msg
 import threading
 import queue
 import tf2_ros
@@ -399,7 +398,7 @@ class FusionProcessor:
         self.class_names = self.load_class_names()
         self.rknnlite = ThreadSafeRKNN()
         self.P_rect, self.R_rect, self.RT = LidarProcessor.load_calibration_data()
-        self.detection_pub = rospy.Publisher(PUB_TOPIC, Detections, queue_size=10)
+        self.detection_pub = rospy.Publisher(PUB_TOPIC, DetectionsWithImg, queue_size=10)
         self.task_queue = queue.Queue(maxsize=MAX_QUEUE_SIZE)
         self.worker_threads = []
         self.stop_event = threading.Event()
@@ -429,7 +428,7 @@ class FusionProcessor:
                 results = self.get_object_3d_coordinates(LidarProcessor.process_point_cloud(pc_msg), detections, transform)
                 
                 # 发布
-                self.publish_detections(results, pc_msg.header)
+                self.publish_detections(results, pc_msg.header, img)
                 
             except queue.Empty:
                 continue
@@ -453,11 +452,40 @@ class FusionProcessor:
             print(f"Processing error: {str(e)}")
             return False
     
-    def publish_detections(self, results, pc_header):
+    def publish_detections(self, results, pc_header, original_img=None):
         """发布"""
-        detections_msg = Detections()
+        detections_msg = DetectionsWithImg()
         detections_msg.header = pc_header
         detections_msg.car_id = CAR_ID
+
+        if original_img is not None:
+            if len(results) > 0:
+                masked_img = np.zeros_like(original_img)
+                for obj in results:
+                    x, y, w, h = obj.box_2d
+                    masked_img[y:y+h, x:x+w] = original_img[y:y+h, x:x+w]
+
+                compression_params = [cv2.IMWRITE_WEBP_QUALITY, 1]  # 1-100，数值越小压缩率越高
+                _, compressed_data = cv2.imencode('.webp', masked_img, compression_params)            
+                compressed_img = CompressedImage()
+                compressed_img.header = pc_header
+                compressed_img.format = "webp"
+                compressed_img.data = compressed_data.tobytes()
+                detections_msg.compressed_image = compressed_img
+            else:
+                # 一、直接不传图像
+                # detections_msg.compressed_image = CompressedImage()
+
+                # 二、传没检测到目标的图像
+                compression_params = [cv2.IMWRITE_WEBP_QUALITY, 1]  # 1-100，数值越小压缩率越高
+                _, compressed_data = cv2.imencode('.webp', original_img, compression_params)            
+                compressed_img = CompressedImage()
+                compressed_img.header = pc_header
+                compressed_img.format = "webp"
+                compressed_img.data = compressed_data.tobytes()
+                detections_msg.compressed_image = compressed_img             
+        else:
+            detections_msg.compressed_image = CompressedImage()
         
         for i, obj in enumerate(results):
             det_msg = Detection()
