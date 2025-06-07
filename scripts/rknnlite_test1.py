@@ -8,6 +8,7 @@ from sklearn.cluster import DBSCAN
 import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
+# 需要修改node名称
 rospy.init_node('data_collector', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
@@ -27,6 +28,7 @@ RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn"
 CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
 
 # topic
+# 需要按需修改点云topic和坐标系转换
 PC_TOPIC = "/sctX/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
 PUB_TOPIC = "own_sensor_detections"
