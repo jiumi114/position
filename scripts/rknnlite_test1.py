@@ -146,16 +146,24 @@ class LidarProcessor:
     @staticmethod
     def load_calibration_data():
         """加载相机标定矩阵"""
-        RT = np.array([
+        RT1 = np.array([
             [-4.670000e-03, -9.999900e-01, -8.800000e-04, -3.125000e-02],
             [-2.516000e-02,  1.000000e-03, -9.996800e-01, -4.237000e-02],
             [ 9.996700e-01, -4.650000e-03, -2.517000e-02, -1.401700e-01],
             [ 0.000000e+00,  0.000000e+00,  0.000000e+00,  1.000000e+00]
         ])
 
-        # 现在的标定有点偏，我加了个水平偏移的量
-        compensation_x = 0.10
-        RT[0, 3] += compensation_x
+        RT2 = np.array([
+            [ 1.605000e-02, -9.998700e-01, -2.060000e-03, -9.482000e-02],
+            [-1.267000e-02,  1.850000e-03, -9.999200e-01, -1.262700e-01],
+            [ 9.997900e-01,  1.607000e-02, -1.264000e-02, -6.129000e-01],
+            [ 0.000000e+00,  0.000000e+00,  0.000000e+00,  1.000000e+00]
+        ])
+
+        RT = RT1
+
+        # compensation_x = 0.10
+        # RT[0, 3] += compensation_x
         
         R_rect = np.array([
             [1.000000e+00, 0.000000e+00, 0.000000e+00, 0.0],
@@ -468,7 +476,7 @@ class FusionProcessor:
             # 调整检测框坐标（同步缩放）
             if len(results) > 0:
                 for obj in results:
-                    obj.box_2d = [int(x*scale_factor) for x in obj.box_2d]  # x,y,w,h全部缩放
+                    obj.box_2d = [int(x*scale_factor) for x in obj.box_2d]  # x,y,w,h
             
             compression_params = [cv2.IMWRITE_WEBP_QUALITY, 1]  # 1-100，数值越小压缩率越高
             _, compressed_data = cv2.imencode('.webp', small_img, compression_params)            

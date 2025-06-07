@@ -9,30 +9,28 @@ from sklearn.cluster import DBSCAN
 import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
-rospy.init_node('data_collector', anonymous=True)
+rospy.init_node('data_collector_visX', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
 import sensor_msgs.point_cloud2 as pc2
-from position.msg import Detection, DetectionsWithOdom
+from position.msg import Detection, Detections
 from geometry_msgs.msg import Point
-from nav_msgs.msg import Odometry
 import threading
 from scipy.spatial.transform import Rotation
 import sys
 
 # config
-RKNN_MODEL = '/home/orangepi/demo2/src/demoros2/src/models/yolov8n.rknn'
-CLASSES_PATH = "/home/orangepi/demo2/src/demoros2/src/models/coco.yaml"
-VISIMG_SAVE_DIR = "/home/orangepi/demo2/src/demoros2/vis-test1"
+RKNN_MODEL = '/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn'
+CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
+VISIMG_SAVE_DIR = "/home/orangepi/position/src/position/vis-test1"
 
-PC_TOPIC = "/ouster/points"
+PC_TOPIC = "/sctX/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
-ODOM_TOPIC = "/odom"
-CAR_ID = "car-001"
+CAR_ID = "carX-vis"
 
 MAX_X = 100
-MAX_Y = 25.0
+MAX_Y = 50.0
 MIN_Z = -2.0
 MIN_REFLECTIVITY = 0.01
 MAX_DISTANCE_FOR_COLOR = 10.0
@@ -53,30 +51,7 @@ class DetectedObject:
 class DataCollector:
     def __init__(self):
         print("init DataCollector")
-        self._init_ros_node()
         self._init_components()
-        
-    
-    def _init_ros_node(self):
-        try:
-            # rospy.init_node('data_collector_for_ros', anonymous=True)
-            print("1")
-        except rospy.ROSInitException as e:
-            print(f"ROSInitException: {e}")
-        except rospy.ROSInterruptException as e:
-            print(f"ROSInterruptException: {e}")
-        except rospy.ROSException as e:
-            print(f"ROSException: {e}")
-        except rospy.ServiceException as e:
-            print(f"ServiceException: {e}")
-        except rospy.ROSInternalException as e:
-            print(f"ROSInternalException: {e}")
-        except ValueError as e:
-            print(f"init_ros_node catch ValueError: {e}")
-            raise
-        except Exception as e:
-            print(f"init_ros_node catch Unknow Exception: {e}")
-            raise
 
     def _init_components(self):
         self.bridge = CvBridge()
@@ -85,18 +60,17 @@ class DataCollector:
         
         pc_sub = message_filters.Subscriber(PC_TOPIC, PointCloud2)
         img_sub = message_filters.Subscriber(IMG_TOPIC, CompressedImage)
-        odom_sub = message_filters.Subscriber(ODOM_TOPIC, Odometry)
         
         self.ts = message_filters.ApproximateTimeSynchronizer(
-            [pc_sub, img_sub, odom_sub],
+            [pc_sub, img_sub],
             queue_size=10,
             slop=0.05
         )
         self.ts.registerCallback(self.sync_callback)
 
-    def sync_callback(self, pc_msg, img_msg, odom_msg):
+    def sync_callback(self, pc_msg, img_msg):
         with self.lock:
-            self.sync_data = (pc_msg, img_msg, odom_msg)
+            self.sync_data = (pc_msg, img_msg)
 
     def get_data(self):
         while not rospy.is_shutdown():
@@ -113,12 +87,21 @@ class LidarProcessor:
     @staticmethod
     def load_calibration_data():
         """Load camera calibration matrices"""
-        RT = np.array([
+        RT1 = np.array([
             [-4.670000e-03, -9.999900e-01, -8.800000e-04, -3.125000e-02],
             [-2.516000e-02,  1.000000e-03, -9.996800e-01, -4.237000e-02],
             [ 9.996700e-01, -4.650000e-03, -2.517000e-02, -1.401700e-01],
             [ 0.000000e+00,  0.000000e+00,  0.000000e+00,  1.000000e+00]
         ])
+
+        RT2 = np.array([
+            [ 1.605000e-02, -9.998700e-01, -2.060000e-03, -9.482000e-02],
+            [-1.267000e-02,  1.850000e-03, -9.999200e-01, -1.262700e-01],
+            [ 9.997900e-01,  1.607000e-02, -1.264000e-02, -6.129000e-01],
+            [ 0.000000e+00,  0.000000e+00,  0.000000e+00,  1.000000e+00]
+        ])
+
+        RT = RT1
 
         # compensation_x = 0.10
         # RT[0, 3] += compensation_x
@@ -382,14 +365,14 @@ class FusionProcessor:
         self.class_names = self.load_class_names()
         self.rknn = RKNNProcessor.load_rknn_model()
         self.P_rect, self.R_rect, self.RT = LidarProcessor.load_calibration_data()
-        self.detection_pub = rospy.Publisher('detection', DetectionsWithOdom, queue_size=10)
+        self.detection_pub = rospy.Publisher('detection', Detections, queue_size=10)
 
     def load_class_names(self):
         with open(CLASSES_PATH, 'r') as f:
             data = yaml.safe_load(f)
             return data.get('names', [])
 
-    def process_data(self, pc_msg, img_msg, odom_msg):
+    def process_data(self, pc_msg, img_msg):
         """Main processing pipeline"""
         try:
 
@@ -422,7 +405,7 @@ class FusionProcessor:
                 print(f"visualize_results error: {str(e)}")
             # 6. Publish results
             try:
-                self.publish_detections(results, pc_msg.header, odom_msg)
+                self.publish_detections(results, pc_msg.header)
             except Exception as e:
                 print(f"publish_detections error: {str(e)}")
 
@@ -432,12 +415,11 @@ class FusionProcessor:
             print(f"Processing error: {str(e)}")
             return [], None
     
-    def publish_detections(self, results, pc_header, odom_msg):
+    def publish_detections(self, results, pc_header):
         """Publish results as ROS message"""
-        detections_msg = DetectionsWithOdom()
+        detections_msg = Detections()
         detections_msg.header = pc_header
         detections_msg.car_id = CAR_ID
-        detections_msg.odom = odom_msg
         
 
         for i, obj in enumerate(results):
@@ -577,37 +559,24 @@ class FusionProcessor:
 def main():
     try:
         print("Initializing program...")
-        # print(sys.path)
         collector = DataCollector()
         processor = FusionProcessor()
 
         while not rospy.is_shutdown():
-            print("\n" + "="*50)
-            print("Waiting for new sensor data...")
 
-            # if(rospy.get_node_uri()):
-            #     print("Node has been initialzed")
-            # else:
-            #     print("Node init failed")
-            
-            # get data
-            # print("try to get data")
             try:
-                pc_msg, img_msg, odom_msg = collector.get_data()
+                pc_msg, img_msg= collector.get_data()
             except Exception as e:
                 print(f"get data failed: {e}")
             
             print("test")
         
-            if pc_msg is None or img_msg is None or odom_msg is None:
-                # print("data is none")
+            if pc_msg is None or img_msg is None:
                 continue
-            # else:
-            #     print("data is not none")
                 
             print("Processing new frame...")
             start_time = time.time()
-            results, vis_img = processor.process_data(pc_msg, img_msg, odom_msg)
+            results, vis_img = processor.process_data(pc_msg, img_msg)
             
             # save img（timestamp）
             result_dir = VISIMG_SAVE_DIR
