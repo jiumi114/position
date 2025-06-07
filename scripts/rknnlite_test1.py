@@ -458,8 +458,11 @@ class FusionProcessor:
         detections_msg.header = pc_header
         detections_msg.car_id = CAR_ID
 
+        # 如果有原始图像，则压缩并添加到消息中
         if original_img is not None:
+            # 如果有检测到目标
             if len(results) > 0:
+                # crop
                 masked_img = np.zeros_like(original_img)
                 for obj in results:
                     x, y, w, h = obj.box_2d
@@ -473,20 +476,27 @@ class FusionProcessor:
                 compressed_img.data = compressed_data.tobytes()
                 detections_msg.compressed_image = compressed_img
             else:
+                # 如果没有检测到目标，两种方案选一种
+
                 # 一、直接不传图像
                 # detections_msg.compressed_image = CompressedImage()
 
-                # 二、传没检测到目标的图像
-                compression_params = [cv2.IMWRITE_WEBP_QUALITY, 1]  # 1-100，数值越小压缩率越高
-                _, compressed_data = cv2.imencode('.webp', original_img, compression_params)            
+                # 二、传没检测到目标的图像 长宽减半
+                small_img = cv2.resize(original_img, 
+                            (original_img.shape[1]//2, original_img.shape[0]//2),
+                            interpolation=cv2.INTER_AREA)
+                compression_params = [cv2.IMWRITE_WEBP_QUALITY, 25]  # 1-100，数值越小压缩率越高
+                _, compressed_data = cv2.imencode('.webp', small_img, compression_params)            
                 compressed_img = CompressedImage()
                 compressed_img.header = pc_header
                 compressed_img.format = "webp"
                 compressed_img.data = compressed_data.tobytes()
                 detections_msg.compressed_image = compressed_img             
         else:
+            # 如果没有原始图像，则创建一个空的CompressedImage
             detections_msg.compressed_image = CompressedImage()
         
+        # 填充检测结果
         for i, obj in enumerate(results):
             det_msg = Detection()
             det_msg.object_id = f"obj_{i}_{pc_header.seq}"
