@@ -9,7 +9,7 @@ import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
 # 需要修改node名称
-rospy.init_node('data_collector', anonymous=True)
+rospy.init_node('data_collectorX', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
@@ -36,7 +36,7 @@ CAR_MAP = 'sctX/ouster_lidar_link'
 CAR_ID = "car-00X"
 
 MAX_X = 100
-MAX_Y = 25.0
+MAX_Y = 50.0
 MIN_Z = -2.0
 MIN_REFLECTIVITY = 0.01
 
