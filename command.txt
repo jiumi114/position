@@ -41,7 +41,7 @@ roscore
 cd ~/position
 source ./devel/setup.bash
 修改一下 src/position/scripts 里面的程序
-vim src/position/scripts/rknnlite_test1.py
+vim ~/position/src/position/scripts/rknnlite_test1.py
 rosrun position rknnlite_test1.py
 可自行写.launch启动脚本
 
