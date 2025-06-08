@@ -568,8 +568,6 @@ def main():
                 pc_msg, img_msg= collector.get_data()
             except Exception as e:
                 print(f"get data failed: {e}")
-            
-            print("test")
         
             if pc_msg is None or img_msg is None:
                 continue

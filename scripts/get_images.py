@@ -9,7 +9,7 @@ from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 
 TOPIC = '/camera/image/compressed'  # topic
-OUTPUT_DIR = '/home/orangepi/demo2/src/demoros2/test'  # 保存目录
+OUTPUT_DIR = '/home/orangepi/position/src/position/get_image_test'  # 保存目录
 FRAME_INTERVAL = 1  # 提取图像的帧间隔
 
 class ImageExtractor:
