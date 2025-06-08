@@ -42,8 +42,8 @@ MIN_REFLECTIVITY = 0.01
 
 NMS_THRESH = 0.25
 OBJ_THRESH = 0.45
-MAX_QUEUE_SIZE = 5  # 最大队列大小
-NUM_WORKER_THREADS = 3  # 工作线程数量
+MAX_QUEUE_SIZE = 3  # 最大队列大小
+NUM_WORKER_THREADS = 2  # 工作线程数量
 IMG_QUALITY = 1  # 图片压缩质量
 
 class DetectedObject:
@@ -543,7 +543,6 @@ class FusionProcessor:
         
         for detection in detections:
             bbox_points = []
-            projected_points = []
             
             for point in lidar_points:
                 X = np.array([point[0], point[1], point[2], 1.0])
@@ -554,7 +553,6 @@ class FusionProcessor:
                 if (detection.box_2d[0] <= pt_x <= detection.box_2d[0] + detection.box_2d[2] and
                     detection.box_2d[1] <= pt_y <= detection.box_2d[1] + detection.box_2d[3]):
                     bbox_points.append(point)
-                    projected_points.append((pt_x, pt_y))
             
             if bbox_points:
                 clusters = LidarProcessor.cluster_points(bbox_points)
