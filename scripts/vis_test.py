@@ -404,10 +404,10 @@ class FusionProcessor:
             except Exception as e:
                 print(f"visualize_results error: {str(e)}")
             # 6. Publish results
-            try:
-                self.publish_detections(results, pc_msg.header)
-            except Exception as e:
-                print(f"publish_detections error: {str(e)}")
+            # try:
+            #     self.publish_detections(results, pc_msg.header)
+            # except Exception as e:
+            #     print(f"publish_detections error: {str(e)}")
 
             return results, vis_img
         

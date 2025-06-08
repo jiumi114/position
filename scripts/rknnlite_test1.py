@@ -14,7 +14,7 @@ from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
 import sensor_msgs.point_cloud2 as pc2
-from position.msg import Detection, DetectionsWithImg
+from position.msg import Detection, Detections
 from geometry_msgs.msg import Point
 import threading
 import queue
@@ -42,7 +42,7 @@ MIN_REFLECTIVITY = 0.01
 
 NMS_THRESH = 0.25
 OBJ_THRESH = 0.45
-MAX_QUEUE_SIZE = 3  # 最大队列大小
+MAX_QUEUE_SIZE = 4  # 最大队列大小
 NUM_WORKER_THREADS = 2  # 工作线程数量
 IMG_QUALITY = 1  # 图片压缩质量
 
@@ -407,7 +407,7 @@ class FusionProcessor:
         self.class_names = self.load_class_names()
         self.rknnlite = ThreadSafeRKNN()
         self.P_rect, self.R_rect, self.RT = LidarProcessor.load_calibration_data()
-        self.detection_pub = rospy.Publisher(PUB_TOPIC, DetectionsWithImg, queue_size=10)
+        self.detection_pub = rospy.Publisher(PUB_TOPIC, Detections, queue_size=10)
         self.task_queue = queue.Queue(maxsize=MAX_QUEUE_SIZE)
         self.worker_threads = []
         self.stop_event = threading.Event()
@@ -463,7 +463,7 @@ class FusionProcessor:
     
     def publish_detections(self, results, pc_header, original_img=None):
         """发布"""
-        detections_msg = DetectionsWithImg()
+        detections_msg = Detections()
         detections_msg.header = pc_header
         detections_msg.car_id = CAR_ID
 
