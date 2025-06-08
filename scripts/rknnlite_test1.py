@@ -9,7 +9,7 @@ import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
 # 需要修改node名称
-rospy.init_node('data_collectorX', anonymous=True)
+rospy.init_node('data_collector_own_X', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
@@ -44,6 +44,7 @@ NMS_THRESH = 0.25
 OBJ_THRESH = 0.45
 MAX_QUEUE_SIZE = 5  # 最大队列大小
 NUM_WORKER_THREADS = 3  # 工作线程数量
+IMG_QUALITY = 1  # 图片压缩质量
 
 class DetectedObject:
     def __init__(self):
@@ -478,7 +479,7 @@ class FusionProcessor:
                 for obj in results:
                     obj.box_2d = [int(x*scale_factor) for x in obj.box_2d]  # x,y,w,h
             
-            compression_params = [cv2.IMWRITE_WEBP_QUALITY, 1]  # 1-100，数值越小压缩率越高
+            compression_params = [cv2.IMWRITE_WEBP_QUALITY, IMG_QUALITY]  # 1-100，数值越小压缩率越高
             _, compressed_data = cv2.imencode('.webp', small_img, compression_params)            
             compressed_img = CompressedImage()
             compressed_img.header = pc_header
