@@ -1,0 +1,8 @@
+# Classes
+names:
+  0: board-house
+  1: building
+  2: car
+  3: person
+  4: tank
+  5: van

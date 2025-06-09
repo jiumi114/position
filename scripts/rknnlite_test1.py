@@ -23,8 +23,8 @@ from tf2_msgs.msg import TFMessage
 from tf.transformations import quaternion_matrix, translation_matrix
 
 # 配置参数
-RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn"
-CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
+RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-no-building.rknn"
+CLASSES_PATH = "/home/orangepi/position/src/position/src/models/dataset2.yaml"
 
 # topic
 # 需要按需修改点云topic和坐标系转换

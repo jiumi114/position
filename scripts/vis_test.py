@@ -21,8 +21,8 @@ from scipy.spatial.transform import Rotation
 import sys
 
 # config
-RKNN_MODEL = '/home/orangepi/position/src/position/src/models/yolov8n-1.6.rknn'
-CLASSES_PATH = "/home/orangepi/position/src/position/src/models/coco.yaml"
+RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-no-building.rknn"
+CLASSES_PATH = "/home/orangepi/position/src/position/src/models/dataset2.yaml"
 VISIMG_SAVE_DIR = "/home/orangepi/position/src/position/vis-test1"
 
 PC_TOPIC = "/sctX/ouster/points"
