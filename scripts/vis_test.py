@@ -5,10 +5,10 @@ import cv2, os, time, yaml, struct
 import numpy as np
 from typing import List, Tuple
 from sklearn.cluster import DBSCAN
-
 import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
+# 需要修改node名称
 rospy.init_node('data_collector_visX', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
@@ -21,9 +21,12 @@ from scipy.spatial.transform import Rotation
 import sys
 
 # config
-RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-no-building.rknn"
-CLASSES_PATH = "/home/orangepi/position/src/position/src/models/dataset2.yaml"
-VISIMG_SAVE_DIR = "/home/orangepi/position/src/position/vis-test1"
+# RKNN_MODEL = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/yolov8n-with-building.rknn"
+# CLASSES_PATH = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/dataset1.yaml"
+
+RKNN_MODEL = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/yolov8n-no-building.rknn"
+CLASSES_PATH = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/dataset2.yaml"
+VISIMG_SAVE_DIR = "/home/orangepi/positionwithimg/src/positionwithimg/vis-test1"
 
 PC_TOPIC = "/sctX/ouster/points"
 IMG_TOPIC = "/camera/image/compressed"
@@ -33,7 +36,7 @@ MAX_X = 100
 MAX_Y = 50.0
 MIN_Z = -2.0
 MIN_REFLECTIVITY = 0.01
-MAX_DISTANCE_FOR_COLOR = 10.0
+MAX_DISTANCE_FOR_COLOR = 10.0  # 用于颜色映射的尺度
 
 class DetectedObject:
     def __init__(self):

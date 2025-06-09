@@ -9,7 +9,7 @@ import rospy
 import logging
 logging.basicConfig(level=logging.INFO)
 # 需要修改node名称
-rospy.init_node('data_collector_own_X', anonymous=True)
+rospy.init_node('data_collector_other_X', anonymous=True)
 from cv_bridge import CvBridge
 import message_filters
 from sensor_msgs.msg import PointCloud2, CompressedImage
@@ -23,8 +23,11 @@ from tf2_msgs.msg import TFMessage
 from tf.transformations import quaternion_matrix, translation_matrix
 
 # 配置参数
-RKNN_MODEL = "/home/orangepi/position/src/position/src/models/yolov8n-no-building.rknn"
-CLASSES_PATH = "/home/orangepi/position/src/position/src/models/dataset2.yaml"
+# RKNN_MODEL = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/yolov8n-with-building.rknn"
+# CLASSES_PATH = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/dataset1.yaml"
+
+RKNN_MODEL = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/yolov8n-no-building.rknn"
+CLASSES_PATH = "/home/orangepi/positionwithimg/src/positionwithimg/src/models/dataset2.yaml"
 
 # topic
 # 需要按需修改点云topic和坐标系转换
@@ -42,9 +45,9 @@ MIN_REFLECTIVITY = 0.01
 
 NMS_THRESH = 0.25
 OBJ_THRESH = 0.45
-MAX_QUEUE_SIZE = 4  # 最大队列大小
-NUM_WORKER_THREADS = 2  # 工作线程数量
-IMG_QUALITY = 1  # 图片压缩质量
+MAX_QUEUE_SIZE = 4  # 最大数据队列大小
+NUM_WORKER_THREADS = 2  # 解析线程数量
+IMG_QUALITY = 1  # 图片压缩质量 1-100，数值越小压缩率越高
 
 class DetectedObject:
     def __init__(self):
@@ -85,12 +88,12 @@ class DataCollector:
         try:
             # 如果队列已满，丢弃最旧的数据
             if self.data_queue.full():
-                print("队列已满，丢弃最旧的数据")
+                # print("队列已满，丢弃最旧的数据")
                 self.data_queue.get_nowait()
             try:
-                print("尝试获取TF")
+                # print("尝试获取TF")
                 transform = self.tf_buffer.lookup_transform(GLOBAL_MAP, CAR_MAP, pc_msg.header.stamp, rospy.Duration(0.1))
-                print("TF获取成功")
+                # print("TF获取成功")
                 self.latest_tf = transform
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
                 # rospy.logwarn(f"TF获取失败: {str(e)}")
@@ -400,7 +403,7 @@ class FusionProcessor:
         self.worker_threads = []
         self.stop_event = threading.Event()
         
-        # 创建工作线程
+        # 创建解析线程
         for i in range(NUM_WORKER_THREADS):
             t = threading.Thread(target=self.worker_loop, daemon=True)
             t.start()
@@ -600,8 +603,6 @@ def main():
         print("Waiting for sensor data...")
         
         while not rospy.is_shutdown():
-            # print("\n" + "="*50)
-            # print("Waiting for new sensor data...")
             
             # 获取数据
             try:
@@ -611,8 +612,6 @@ def main():
             if pc_msg is None or img_msg is None or tf_msg is None:
                 rospy.sleep(0.1)
                 continue
-            else:
-                print("get data once")
                 
             print("Processing new frame...")
             start_time = time.time()
